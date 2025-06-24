@@ -250,6 +250,7 @@ pub struct EditProject {
     pub monetization_status: Option<MonetizationStatus>,
     pub side_types_migration_review_status:
         Option<SideTypesMigrationReviewStatus>,
+    pub alist_url: Option<Option<String>>,
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -321,6 +322,27 @@ pub async fn project_edit(
             WHERE (id = $2)
             ",
             name.trim(),
+            id as db_ids::DBProjectId,
+        )
+        .execute(&mut *transaction)
+        .await?;
+    }
+
+    if let Some(alist_url) = &new_project.alist_url {
+        if !perms.contains(ProjectPermissions::EDIT_DETAILS) {
+            return Err(ApiError::CustomAuthentication(
+                "You do not have the permissions to edit the Alist URL of this project!"
+                    .to_string(),
+            ));
+        }
+
+        sqlx::query!(
+            "
+            UPDATE mods
+            SET alist_url = $1
+            WHERE (id = $2)
+            ",
+            alist_url.as_deref(),
             id as db_ids::DBProjectId,
         )
         .execute(&mut *transaction)

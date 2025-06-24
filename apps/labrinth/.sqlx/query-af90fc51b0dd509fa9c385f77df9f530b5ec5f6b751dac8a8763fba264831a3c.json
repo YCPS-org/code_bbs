@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE mods\n            SET alist_url = $1\n            WHERE (id = $2)\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Int8"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "af90fc51b0dd509fa9c385f77df9f530b5ec5f6b751dac8a8763fba264831a3c"
+}

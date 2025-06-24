@@ -222,6 +222,9 @@ pub struct ProjectCreateData {
 
     /// The id of the organization to create the project in
     pub organization_id: Option<OrganizationId>,
+
+    /// The url to the alist instance for this project, if applicable
+    pub alist_url: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Validate, Clone)]
@@ -783,6 +786,7 @@ async fn project_create_inner(
                 .collect(),
             color: icon_data.and_then(|x| x.2),
             monetization_status: MonetizationStatus::Monetized,
+            alist_url: project_create_data.alist_url.clone(),
         };
         let project_builder = project_builder_actual.clone();
 
@@ -905,6 +909,7 @@ async fn project_create_inner(
             side_types_migration_review_status:
                 SideTypesMigrationReviewStatus::Reviewed,
             fields: HashMap::new(), // Fields instantiate to empty
+            alist_url: project_builder.alist_url.clone(),
         };
 
         Ok(HttpResponse::Ok().json(response))

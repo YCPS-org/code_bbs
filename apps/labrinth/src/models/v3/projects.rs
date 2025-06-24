@@ -98,6 +98,8 @@ pub struct Project {
     /// Aggregated loader-fields across its myriad of versions
     #[serde(flatten)]
     pub fields: HashMap<String, Vec<serde_json::Value>>,
+
+    pub alist_url: Option<String>,
 }
 
 // This is a helper function to convert a list of VersionFields into a HashMap of field name to vecs of values
@@ -212,6 +214,7 @@ impl From<ProjectQueryResult> for Project {
             side_types_migration_review_status: m
                 .side_types_migration_review_status,
             fields,
+            alist_url: m.alist_url,
         }
     }
 }

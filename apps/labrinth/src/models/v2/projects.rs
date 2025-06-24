@@ -65,6 +65,7 @@ pub struct LegacyProject {
     pub color: Option<u32>,
     pub thread_id: ThreadId,
     pub monetization_status: MonetizationStatus,
+    alist_url: Option<String>,
 }
 
 impl LegacyProject {
@@ -221,6 +222,7 @@ impl LegacyProject {
             client_side,
             server_side,
             game_versions,
+            alist_url: data.alist_url, // V2 alist_url is the same as V3
         }
     }
 

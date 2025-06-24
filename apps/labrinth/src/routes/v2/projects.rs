@@ -1,5 +1,5 @@
 use crate::database::models::categories::LinkPlatform;
-use crate::database::models::{project_item, version_item};
+use crate::database::models::{ids, project_item, version_item};
 use crate::database::redis::RedisPool;
 use crate::file_hosting::FileHost;
 use crate::models::projects::{
@@ -22,6 +22,7 @@ use std::sync::Arc;
 use validator::Validate;
 
 pub fn config(cfg: &mut web::ServiceConfig) {
+    cfg.service(project_alist);
     cfg.service(project_search);
     cfg.service(projects_get);
     cfg.service(projects_edit);
@@ -48,6 +49,87 @@ pub fn config(cfg: &mut web::ServiceConfig) {
                     .service(dependency_list),
             ),
     );
+}
+#[derive(Serialize, Deserialize, Debug)]
+pub struct GetAlist {
+    pub offset: Option<String>,
+    pub limit: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct WithAlistProject {
+    /// The ID of the project, encoded as a base62 string.
+    pub id: i64,
+    /// The slug of a project, used for vanity URLs
+    pub slug: Option<String>,
+
+    pub alist_url: Option<String>,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct AlistResults {
+    pub hits: Vec<WithAlistProject>,
+    pub offset: usize,
+    pub limit: usize,
+    pub total_hits: usize,
+}
+
+#[get("alist")]
+pub async fn project_alist(
+    web::Query(info): web::Query<GetAlist>,
+    pool: web::Data<PgPool>,
+    _: web::Data<RedisPool>,
+) -> Result<HttpResponse, ApiError> {
+    // 1. 解析分页参数
+    let limit = info.limit.unwrap_or_default().parse::<usize>().unwrap_or(0);
+    let offset = info
+        .offset
+        .unwrap_or_default()
+        .parse::<usize>()
+        .unwrap_or(0)
+        .min(100);
+
+    // 2. 查询数据库，筛选alist_url IS NOT NULL
+    let projects_ids = sqlx::query!(
+        "SELECT id FROM mods \
+        WHERE alist_url IS NOT NULL \
+        ORDER BY id DESC \
+        LIMIT $1 \
+        OFFSET $2",
+        limit as i32,
+        offset as i32
+    )
+    .fetch_all(&**pool)
+    .await?
+    .into_iter()
+    .map(|m| ids::DBProjectId(m.id))
+    .collect::<Vec<_>>();
+
+    let id_vec: Vec<i64> = projects_ids.iter().map(|id| id.0).collect();
+    let projects = sqlx::query_as!(
+        WithAlistProject,
+        "SELECT id, slug, alist_url FROM mods WHERE id = ANY($1)",
+        &id_vec
+    )
+    .fetch_all(&**pool)
+    .await?;
+
+    let total_count = sqlx::query_scalar!(
+        "SELECT COUNT(*) FROM mods WHERE alist_url IS NOT NULL"
+    )
+    .fetch_one(&**pool)
+    .await?
+    .unwrap_or(0)
+    .min(0);
+
+    let results = AlistResults {
+        hits: projects,
+        total_hits: total_count.try_into().unwrap_or(0),
+        limit,
+        offset,
+    };
+
+    Ok(HttpResponse::Ok().json(results))
 }
 
 #[get("search")]
@@ -421,6 +503,7 @@ pub async fn project_edit(
     let client_side = v2_new_project.client_side;
     let server_side = v2_new_project.server_side;
     let new_slug = v2_new_project.slug.clone();
+    let new_alist_url = v2_new_project.license_url.clone();
 
     // TODO: Some kind of handling here to ensure project type is fine.
     // We expect the version uploaded to be of loader type modpack, but there might  not be a way to check here for that.
@@ -512,6 +595,7 @@ pub async fn project_edit(
         moderation_message_body: v2_new_project.moderation_message_body,
         monetization_status: v2_new_project.monetization_status,
         side_types_migration_review_status: None, // Not to be exposed in v2
+        alist_url: new_alist_url,
     };
 
     // This returns 204 or failure so we don't need to do anything with it

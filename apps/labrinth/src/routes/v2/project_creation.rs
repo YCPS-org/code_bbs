@@ -14,6 +14,7 @@ use crate::routes::{v2_reroute, v3};
 use actix_multipart::Multipart;
 use actix_web::web::Data;
 use actix_web::{HttpRequest, HttpResponse, post};
+//use rand_chacha::rand_core::le;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::postgres::PgPool;
@@ -89,6 +90,12 @@ struct ProjectCreateData {
     )]
     /// An optional link to the source code for the project.
     pub source_url: Option<String>,
+    #[validate(
+        custom(function = "crate::util::validate::validate_url"),
+        length(max = 2048)
+    )]
+    /// An optional link to the project's alist page.
+    pub alist_url: Option<String>,
     #[validate(
         custom(function = "crate::util::validate::validate_url"),
         length(max = 2048)
@@ -239,6 +246,7 @@ pub async fn project_create(
                 requested_status: legacy_create.requested_status,
                 uploaded_images: legacy_create.uploaded_images,
                 organization_id: legacy_create.organization_id,
+                alist_url: legacy_create.alist_url,
             })
         },
     )

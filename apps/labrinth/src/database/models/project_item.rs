@@ -176,6 +176,7 @@ pub struct ProjectBuilder {
     pub gallery_items: Vec<DBGalleryItem>,
     pub color: Option<u32>,
     pub monetization_status: MonetizationStatus,
+    pub alist_url: Option<String>,
 }
 
 impl ProjectBuilder {
@@ -215,6 +216,7 @@ impl ProjectBuilder {
             side_types_migration_review_status:
                 SideTypesMigrationReviewStatus::Reviewed,
             loaders: vec![],
+            alist_url: self.alist_url,
         };
         project_struct.insert(&mut *transaction).await?;
 
@@ -294,6 +296,7 @@ pub struct DBProject {
     pub monetization_status: MonetizationStatus,
     pub side_types_migration_review_status: SideTypesMigrationReviewStatus,
     pub loaders: Vec<String>,
+    pub alist_url: Option<String>,
 }
 
 impl DBProject {
@@ -308,14 +311,14 @@ impl DBProject {
                 published, downloads, icon_url, raw_icon_url, status, requested_status,
                 license_url, license,
                 slug, color, monetization_status, organization_id,
-                side_types_migration_review_status
+                side_types_migration_review_status, alist_url
             )
             VALUES (
                 $1, $2, $3, $4, $5, $6,
                 $7, $8, $9, $10, $11,
                 $12, $13,
                 LOWER($14), $15, $16, $17,
-                $18
+                $18, $19
             )
             ",
             self.id as DBProjectId,
@@ -335,7 +338,8 @@ impl DBProject {
             self.color.map(|x| x as i32),
             self.monetization_status.as_str(),
             self.organization_id.map(|x| x.0 as i64),
-            self.side_types_migration_review_status.as_str()
+            self.side_types_migration_review_status.as_str(),
+            self.alist_url.as_ref()
         )
         .execute(&mut **transaction)
         .await?;
@@ -779,6 +783,7 @@ impl DBProject {
                     m.webhook_sent, m.color,
                     t.id thread_id, m.monetization_status monetization_status,
                     m.side_types_migration_review_status side_types_migration_review_status,
+                    m.alist_url alist_url,
                     ARRAY_AGG(DISTINCT c.category) filter (where c.category is not null and mc.is_additional is false) categories,
                     ARRAY_AGG(DISTINCT c.category) filter (where c.category is not null and mc.is_additional is true) additional_categories
                     FROM mods m
@@ -848,6 +853,7 @@ impl DBProject {
                                     &m.side_types_migration_review_status,
                                 ),
                                 loaders,
+                                alist_url: m.alist_url,
                             },
                             categories: m.categories.unwrap_or_default(),
                             additional_categories: m.additional_categories.unwrap_or_default(),
