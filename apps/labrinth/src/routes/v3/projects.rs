@@ -250,6 +250,11 @@ pub struct EditProject {
     pub monetization_status: Option<MonetizationStatus>,
     pub side_types_migration_review_status:
         Option<SideTypesMigrationReviewStatus>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "::serde_with::rust::double_option"
+    )]
     pub alist_url: Option<Option<String>>,
 }
 
@@ -264,6 +269,8 @@ pub async fn project_edit(
     session_queue: web::Data<AuthQueue>,
     moderation_queue: web::Data<AutomatedModerationQueue>,
 ) -> Result<HttpResponse, ApiError> {
+    tracing::info!("[project_edit] alist_url: {:?}", new_project.alist_url);
+
     let user = get_user_from_headers(
         &req,
         &**pool,
@@ -328,21 +335,20 @@ pub async fn project_edit(
         .await?;
     }
 
-    if let Some(alist_url) = &new_project.alist_url {
+    if let Some(Some(alist_url)) = &new_project.alist_url {
         if !perms.contains(ProjectPermissions::EDIT_DETAILS) {
             return Err(ApiError::CustomAuthentication(
                 "You do not have the permissions to edit the Alist URL of this project!"
                     .to_string(),
             ));
         }
-
         sqlx::query!(
             "
             UPDATE mods
             SET alist_url = $1
             WHERE (id = $2)
             ",
-            alist_url.as_deref(),
+            alist_url,
             id as db_ids::DBProjectId,
         )
         .execute(&mut *transaction)

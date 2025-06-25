@@ -81,13 +81,18 @@ pub async fn project_alist(
     _: web::Data<RedisPool>,
 ) -> Result<HttpResponse, ApiError> {
     // 1. 解析分页参数
-    let limit = info.limit.unwrap_or_default().parse::<usize>().unwrap_or(0);
+    let limit = info
+        .limit
+        .unwrap_or_default()
+        .parse::<usize>()
+        .unwrap_or(10)
+        .max(1)
+        .min(100);
     let offset = info
         .offset
         .unwrap_or_default()
         .parse::<usize>()
-        .unwrap_or(0)
-        .min(100);
+        .unwrap_or(0);
 
     // 2. 查询数据库，筛选alist_url IS NOT NULL
     let projects_ids = sqlx::query!(
@@ -119,12 +124,11 @@ pub async fn project_alist(
     )
     .fetch_one(&**pool)
     .await?
-    .unwrap_or(0)
-    .min(0);
+    .unwrap_or(0) as usize;
 
     let results = AlistResults {
         hits: projects,
-        total_hits: total_count.try_into().unwrap_or(0),
+        total_hits: total_count,
         limit,
         offset,
     };
@@ -485,6 +489,12 @@ pub struct EditProject {
     #[validate(length(max = 65536))]
     pub moderation_message_body: Option<Option<String>>,
     pub monetization_status: Option<MonetizationStatus>,
+    #[serde(
+        default,
+        skip_serializing_if = "Option::is_none",
+        with = "::serde_with::rust::double_option"
+    )]
+    pub alist_url: Option<Option<String>>,
 }
 
 #[patch("{id}")]
@@ -503,7 +513,7 @@ pub async fn project_edit(
     let client_side = v2_new_project.client_side;
     let server_side = v2_new_project.server_side;
     let new_slug = v2_new_project.slug.clone();
-    let new_alist_url = v2_new_project.license_url.clone();
+    let new_alist_url = v2_new_project.alist_url.clone();
 
     // TODO: Some kind of handling here to ensure project type is fine.
     // We expect the version uploaded to be of loader type modpack, but there might  not be a way to check here for that.
