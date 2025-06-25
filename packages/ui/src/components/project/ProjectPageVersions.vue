@@ -203,6 +203,7 @@ const props = withDefaults(
       project_type: string
       slug?: string
       id: string
+      alist_url: string | null
     }
     versions: VersionWithDisplayUrlEnding[]
     showFiles?: boolean

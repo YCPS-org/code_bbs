@@ -396,7 +396,9 @@ pub async fn project_edit(
         }
 
         if status == &ProjectStatus::Processing {
-            if project_item.versions.is_empty() {
+            if project_item.versions.is_empty()
+                && project_item.inner.alist_url.is_none()
+            {
                 return Err(ApiError::InvalidInput(String::from(
                     "Project submitted for review with no initial versions",
                 )));

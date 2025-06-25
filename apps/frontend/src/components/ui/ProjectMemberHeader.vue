@@ -205,7 +205,7 @@ const featuredGalleryImage = computed(() => props.project.gallery.find((img) => 
 
 const nags = computed(() => [
   {
-    condition: props.versions.length < 1,
+    condition: props.versions.length < 1 && props.project.alist_url === null,
     title: "Upload a version",
     id: "upload-version",
     description: "At least one version is required for a project to be submitted for review.",
@@ -289,7 +289,7 @@ const nags = computed(() => [
   },
   {
     hide:
-      props.project.versions.length === 0 ||
+      (props.project.versions.length === 0 && props.project.alist_url === null) ||
       props.project.project_type === "resourcepack" ||
       props.project.project_type === "plugin" ||
       props.project.project_type === "shader" ||

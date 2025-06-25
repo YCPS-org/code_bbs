@@ -90,7 +90,7 @@ impl LegacyResultSearchProject {
         let og_project_type = project_types
             .first()
             .cloned()
-            .unwrap_or("project".to_string()); // Default to 'project' if none are found
+            .unwrap_or("modpack".to_string()); // Default to 'project' if none are found
 
         let project_type =
             if og_project_type == "datapack" || og_project_type == "plugin" {

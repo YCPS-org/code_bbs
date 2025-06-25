@@ -65,6 +65,24 @@
           <textarea id="additional-information" v-model="description" maxlength="256" />
         </div>
       </div>
+      <!-- 新增 Alist 文件夹名称输入框，可选 -->
+      <div class="flex flex-col gap-2">
+        <label for="alist-folder-name" class="flex flex-col gap-1">
+          <span class="text-lg font-semibold text-contrast">
+            Alist文件夹名称
+            <span class="text-xs text-gray-400">(可选)</span>
+          </span>
+          <span class="text-sm text-gray-400">如需关联Alist文件夹，请填写文件夹名称，否则可留空。</span>
+        </label>
+        <input
+          id="alist-folder-name"
+          v-model="alistFolderName"
+          type="text"
+          maxlength="128"
+          placeholder="输入Alist文件夹名称（可选）..."
+          autocomplete="off"
+        />
+      </div>
       <div class="flex gap-2">
         <ButtonStyled color="brand">
           <button @click="createProject">
@@ -104,6 +122,8 @@ const name = ref("");
 const slug = ref("");
 const description = ref("");
 const manualSlug = ref(false);
+// 新增 Alist 文件夹名称变量
+const alistFolderName = ref("");
 const visibilities = ref([
   {
     actual: "approved",
@@ -154,6 +174,7 @@ async function createProject() {
     server_side: "required",
     license_id: "LicenseRef-Unknown",
     is_draft: true,
+    alist_url: alistFolderName.value,
   };
 
   if (props.organizationId) {

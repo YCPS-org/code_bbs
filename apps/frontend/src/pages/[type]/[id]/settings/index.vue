@@ -90,9 +90,19 @@
           :disabled="!hasPermission"
         />
       </div>
+      <label for="project-alist-url">
+        <span class="label__title">Alist 文件夹名称</span>
+      </label>
+      <input
+        id="project-alist-url"
+        v-model="alistUrl"
+        type="text"
+        maxlength="256"
+        :disabled="!hasPermission"
+      />
       <template
         v-if="
-          project.versions?.length !== 0 &&
+          (project.versions?.length !== 0 || project.alist_url != null) &&
           project.project_type !== 'resourcepack' &&
           project.project_type !== 'plugin' &&
           project.project_type !== 'shader' &&
@@ -279,6 +289,7 @@ const router = useNativeRouter();
 const name = ref(props.project.title);
 const slug = ref(props.project.slug);
 const summary = ref(props.project.description);
+const alistUrl = ref(props.project.alist_url || "");
 const icon = ref(null);
 const previewImage = ref(null);
 const clientSide = ref(props.project.client_side);
@@ -326,6 +337,9 @@ const patchData = computed(() => {
     }
   } else if (visibility.value !== props.project.requested_status) {
     data.requested_status = visibility.value;
+  }
+  if (alistUrl.value !== props.project.alist_url) {
+    data.alist_url = alistUrl.value.trim();
   }
 
   return data;

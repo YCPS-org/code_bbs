@@ -1,5 +1,5 @@
 <template>
-  <div v-if="project.versions.length > 0" class="flex flex-col gap-3">
+  <div v-if="project.versions.length > 0 || project.alist_url !== null" class="flex flex-col gap-3">
     <h2 class="text-lg m-0">{{ formatMessage(messages.title) }}</h2>
     <section class="flex flex-col gap-2">
       <h3 class="text-primary text-base m-0">{{ formatMessage(messages.minecraftJava) }}</h3>
@@ -96,6 +96,7 @@ defineProps<{
     server_side: EnvironmentValue
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     versions: any[]
+    alist_url: string | null
   }
   tags: {
     gameVersions: GameVersionTag[]

@@ -9,10 +9,10 @@
     @proceed="deleteVersion()"
   />
   <section class="experimental-styles-within overflow-visible">
-    <div
-      v-if="currentMember && isPermission(currentMember?.permissions, 1 << 0)"
-      class="card flex items-center gap-4"
-    >
+    <div v-if="project.alist_url" class="card flex items-center gap-4 mb-2">
+      <span class="text-brand font-bold">Alist文件夹名称: {{ project.alist_url }}</span>
+    </div>
+    <div v-if="currentMember && isPermission(currentMember?.permissions, 1 << 0) && !project.alist_url" class="card flex items-center gap-4">
       <FileInput
         :max-size="524288000"
         :accept="acceptFileFromProjectType(project.project_type)"
@@ -38,7 +38,7 @@
       :base-id="baseDropdownId"
       :version-link="
         (version) =>
-          `/${project.project_type}/${
+          `/${project.project_type}/$${
             project.slug ? project.slug : project.id
           }/version/${encodeURI(version.displayUrlEnding)}`
       "
@@ -72,7 +72,7 @@
               {
                 id: 'new-tab',
                 action: () => {},
-                link: `/${project.project_type}/${
+                link: `/${project.project_type}/$${
                   project.slug ? project.slug : project.id
                 }/version/${encodeURI(version.displayUrlEnding)}`,
                 external: true,
@@ -81,7 +81,7 @@
                 id: 'copy-link',
                 action: () =>
                   copyToClipboard(
-                    `https://modrinth.com/${project.project_type}/${
+                    `https://modrinth.com/${project.project_type}/$${
                       project.slug ? project.slug : project.id
                     }/version/${encodeURI(version.displayUrlEnding)}`,
                   ),
@@ -116,7 +116,7 @@
               { divider: true, shown: currentMember },
               {
                 id: 'edit',
-                link: `/${project.project_type}/${
+                link: `/${project.project_type}/$${
                   project.slug ? project.slug : project.id
                 }/version/${encodeURI(version.displayUrlEnding)}/edit`,
                 shown: currentMember,
