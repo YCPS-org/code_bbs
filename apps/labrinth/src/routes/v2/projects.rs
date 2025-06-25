@@ -86,8 +86,7 @@ pub async fn project_alist(
         .unwrap_or_default()
         .parse::<usize>()
         .unwrap_or(10)
-        .max(1)
-        .min(100);
+        .clamp(10, 100);
     let offset = info
         .offset
         .unwrap_or_default()
