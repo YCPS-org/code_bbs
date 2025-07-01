@@ -43,7 +43,9 @@ import _YouTubeIcon from './external/youtube.svg?component'
 import _AlignLeftIcon from './icons/align-left.svg?component'
 import _ArchiveIcon from './icons/archive.svg?component'
 import _ArrowBigUpDashIcon from './icons/arrow-big-up-dash.svg?component'
+import _ArrowBigRightDashIcon from './icons/arrow-big-right-dash.svg?component'
 import _AsteriskIcon from './icons/asterisk.svg?component'
+import _BadgeCheckIcon from './icons/badge-check.svg?component'
 import _BanIcon from './icons/ban.svg?component'
 import _BellIcon from './icons/bell.svg?component'
 import _BellRingIcon from './icons/bell-ring.svg?component'
@@ -157,12 +159,14 @@ import _RestoreIcon from './icons/restore.svg?component'
 import _RightArrowIcon from './icons/right-arrow.svg?component'
 import _RotateCounterClockwiseIcon from './icons/rotate-ccw.svg?component'
 import _RotateClockwiseIcon from './icons/rotate-cw.svg?component'
+import _RssIcon from './icons/rss.svg?component'
 import _SaveIcon from './icons/save.svg?component'
 import _ScaleIcon from './icons/scale.svg?component'
 import _ScanEyeIcon from './icons/scan-eye.svg?component'
 import _SearchIcon from './icons/search.svg?component'
 import _SendIcon from './icons/send.svg?component'
 import _ServerIcon from './icons/server.svg?component'
+import _ServerPlusIcon from './icons/server-plus.svg?component'
 import _SettingsIcon from './icons/settings.svg?component'
 import _ShareIcon from './icons/share.svg?component'
 import _ShieldIcon from './icons/shield.svg?component'
@@ -210,6 +214,7 @@ import _CPUIcon from './icons/cpu.svg?component'
 import _LoaderIcon from './icons/loader.svg?component'
 import _ImportIcon from './icons/import.svg?component'
 import _TimerIcon from './icons/timer.svg?component'
+import _GitGraphIcon from './icons/git-graph.svg?component'
 
 // Editor Icons
 import _BoldIcon from './icons/bold.svg?component'
@@ -264,6 +269,7 @@ export const AlignLeftIcon = _AlignLeftIcon
 export const ArchiveIcon = _ArchiveIcon
 export const ArrowBigUpDashIcon = _ArrowBigUpDashIcon
 export const AsteriskIcon = _AsteriskIcon
+export const BadgeCheckIcon = _BadgeCheckIcon
 export const BanIcon = _BanIcon
 export const BellIcon = _BellIcon
 export const BellRingIcon = _BellRingIcon
@@ -383,6 +389,7 @@ export const ScanEyeIcon = _ScanEyeIcon
 export const SearchIcon = _SearchIcon
 export const SendIcon = _SendIcon
 export const ServerIcon = _ServerIcon
+export const ServerPlusIcon = _ServerPlusIcon
 export const SettingsIcon = _SettingsIcon
 export const ShareIcon = _ShareIcon
 export const ShieldIcon = _ShieldIcon
@@ -441,3 +448,6 @@ export const LoaderIcon = _LoaderIcon
 export const ImportIcon = _ImportIcon
 export const CardIcon = _CardIcon
 export const TimerIcon = _TimerIcon
+export const RssIcon = _RssIcon
+export const GitGraphIcon = _GitGraphIcon
+export const ArrowBigRightDashIcon = _ArrowBigRightDashIcon
