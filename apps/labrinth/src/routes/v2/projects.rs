@@ -58,9 +58,11 @@ pub async fn project_search(
     // Search now uses loader_fields instead of explicit 'client_side' and 'server_side' fields
     // While the backend for this has changed, it doesnt affect much
     // in the API calls except that 'versions:x' is now 'game_versions:x'
+    println!("=== into search API ===");
     let facets: Option<Vec<Vec<String>>> = if let Some(facets) = info.facets {
         let facets = serde_json::from_str::<Vec<Vec<String>>>(&facets)?;
-
+        // println!("=== facets original in if of if-else ===");
+        // println!("{:?}", facets);
         Some(
             facets
                 .into_iter()
