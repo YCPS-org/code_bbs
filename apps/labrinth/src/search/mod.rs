@@ -215,9 +215,10 @@ pub async fn search_for_project(
         .parse::<usize>()?
         .min(100);
 
+
     // println!("==== mod.rs ====");
     // println!("{:?}", info.query);
-
+  
     let order_by = match index {
         "relevance" | "downloads" => "downloads DESC",
         "follows" => "follows DESC",

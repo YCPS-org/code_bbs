@@ -550,6 +550,7 @@ const sortType = ref("relevance");
 
 const auth = await useAuth();
 const tags = useTags();
+const route = useNativeRoute();
 
 const newProjects = homePageProjects?.slice(0, 40);
 const val = Math.ceil(newProjects?.length / 3);
@@ -567,9 +568,11 @@ const notifications = ref(homePageNotifs?.hits ?? []);
 const searchProjects = ref(homePageSearch?.hits ?? []);
 
 async function updateSearchProjects() {
-  const res = await useBaseFetch(
-    `search?limit=3&query=${searchQuery.value}&index=${sortType.value}`,
-  );
+  const uri = route.path;
+  const url = `search?limit=3&query=${searchQuery.value}&index=${sortType.value}&uri=${encodeURIComponent(uri)}`;
+  console.log('Search request uri:', url);
+  console.log('Search request body:', null);
+  const res = await useBaseFetch(url);
 
   searchProjects.value = res?.hits ?? [];
 }

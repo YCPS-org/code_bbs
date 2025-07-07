@@ -553,7 +553,15 @@ const {
     const config = useRuntimeConfig();
     const base = import.meta.server ? config.apiBaseUrl : config.public.apiBaseUrl;
 
-    return `${base}search${requestParams.value}`;
+    const uriParam = `&uri=${encodeURIComponent(route.path)}`;
+    const url = `${base}search${requestParams.value}${uriParam}`;
+
+    if (import.meta.client) {
+      console.log('Search request uri:', url);
+      console.log('Search request body:', null);
+    }
+
+    return url;
   },
   {
     transform: (hits) => {
